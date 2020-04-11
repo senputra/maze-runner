@@ -59,9 +59,7 @@ class StateMachine(sm.SM):
             })
         elif inp_key_code in (ord("Q"), ord("q")):
             state.update({
-                "DIFFICULTY": "EASY",
                 "SCREEN": "QUIT",
-                "MAP_COUNTER": 100,
             })
 
         return state
@@ -129,6 +127,10 @@ class StateMachine(sm.SM):
             })
         return state
 
+    # A dummy converter so the machine does not halt
+    def screen_default(self, state, inp):
+        return state
+
     def get_next_values(self, state, inp_key_code):
         return {
             "MENU": self.screen_menu,
@@ -137,7 +139,7 @@ class StateMachine(sm.SM):
             "PLAY": self.screen_play,
             "PAUSE": self.screen_pause,
             "RESULT": self.screen_result,
-        }.get(state["SCREEN"], state)(state, inp_key_code), None
+        }.get(state["SCREEN"], screen_default)(state, inp_key_code), None
 
 
 class MazeRunner():
@@ -328,17 +330,7 @@ ________________________________________________________________________________
                     raise StopApplication("asd")
                 elif c in (ord("Q"), ord("q")):
                     raise StopApplication("asd")
-        if self.sm.state["WIN"] is not False:
-            title = "FAILED"
-            art = r"""
-    ▄▄▄
-  ▄▀░▄░▀▄
-  █░█▄▀░█
-  █░▀▄▄▀█▄█▄▀
-█▄▄█▄▄▄▄███▀
-a loser snail
-            """
-        else:
+        if self.sm.state["WIN"]:
             title = "WON"
             art = r"""
                       █████████
@@ -357,7 +349,16 @@ a loser snail
  ██▒▒▒▒▒▒▒▒▒▒████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█
   ████████████  ░█████████████████
             """
-
+        else:
+            title = "FAILED"
+            art = r"""
+    ▄▄▄
+  ▄▀░▄░▀▄
+  █░█▄▀░█
+  █░▀▄▄▀█▄█▄▀
+█▄▄█▄▄▄▄███▀
+a loser snail
+            """
         scenes = []
         if self.screenSizeCheck(screen):
             effects = [
@@ -373,7 +374,7 @@ a loser snail
                     images=[art]), y=screen.height//2 - 2+9)
             ]
 
-            screen.set_title("Maze Runner")
+            screen.set_title(title)
             scenes.append(Scene(effects, -1))
             screen.play(scenes, stop_on_resize=True,
                         unhandled_input=even_handler)
@@ -434,7 +435,7 @@ a loser snail
             screen.print_at(
                 'O', map_padding[0]+player_pos.x_int, map_padding[1]+player_pos.y_int)
 
-            message = "Left with {} map charges".format(
+            message = "Left with {} map charges.".format(
                 self.sm.state["MAP_COUNTER"])
 
             screen.print_at(
@@ -567,9 +568,9 @@ a loser snail
                         if not((0.05 < tar_x % 1 < 0.95) or (0.05 < tar_y % 1 < 0.95)):
                             black_hit = True
 
-                # Closest will have least ceiling and floor ( 1/10 each )
-                # Furthest will have most ceiling and floor ( 1/3 each)
-
+                # Closest will have least ceiling and floor
+                # Furthest will have most ceiling and floor
+                # Linear mapping
                 # TODO optimize this later
                 floorceil_thickness = (
                     distance) * (diff_floorceil) / (distance_too_far) + min_floorceil
@@ -615,19 +616,18 @@ a loser snail
         while True:
             try:
                 if self.sm.state["SCREEN"] is "MENU":
-                    Screen.wrapper(self.start_screen)
+                    Screen.wrapper(self.start_screen, catch_interrupt=True)
                 elif self.sm.state["SCREEN"] is "WAIT":
-                    Screen.wrapper(self.wait_screen)
+                    Screen.wrapper(self.wait_screen, catch_interrupt=True)
                 elif self.sm.state["SCREEN"] is "QUIT":
                     print("Stopped gracefully")
-                    print(self.sm.state)
+                    # print(self.sm.state)
                     sys.exit(0)
                 else:
                     Screen.wrapper(self.main_screen)
 
             except ResizeScreenError:
                 pass
-            # Screen.wrapper(demo)
 
 
 if __name__ == "__main__":
