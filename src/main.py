@@ -139,7 +139,7 @@ class StateMachine(sm.SM):
             "PLAY": self.screen_play,
             "PAUSE": self.screen_pause,
             "RESULT": self.screen_result,
-        }.get(state["SCREEN"], screen_default)(state, inp_key_code), None
+        }.get(state["SCREEN"], self.screen_default)(state, inp_key_code), None
 
 
 class MazeRunner():
@@ -255,24 +255,24 @@ class MazeRunner():
                       speed=1,
                       transparent=True),
                 Print(screen, StaticRenderer(images=[r"""
-_____________________________________________________________________________________
-| OBJECTIVE                                                                          |
-|------------------------------------------------------------------------------------|
-|                                                                                    |
-|  You need to escape the maze ASAP. Find the GOLDEN door                            |
-|  You are only allowed to look at the map 3 times.                                  |
-|                                                                                    |
-|                                                                                    |
-|  control : Press A, W, S, D to move around. Press Q and E to pan.                  |
-|                                                                                    |
-|  Press P to pause the game. (It can be tiring so take your time to solve the maze) |
-|                                                                                    |
-|  Are you ready?  \☺/                                                               |
-|  Good luck!       []                                                               |
-|                   /\                        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄    |
-|                                             █        ▀█▄▀▄▀██████ ▀█▄▀▄▀██████     |
-|  Press [SPACE BAR] to start the game                   ▀█▄█▄███▀    ▀█▄█▄███       |
-|____________________________________________________________________________________|
+_______________________________________________________________________________________
+| OBJECTIVE                                                                            |
+|--------------------------------------------------------------------------------------|
+|                                                                                      |
+|  You need to escape the maze ASAP. Find the GOLDEN door                              |
+|  You are only allowed to look at the map 3 times.                                    |
+|                                                                                      |
+|                                                                                      |
+|  control : Press A, W, S, D to move around. Press Q and E to pan.                    |
+|  Press M to look at the map (Psst you only can look at the map limited no. of time)  |
+|  Press P to pause the game. (It can be tiring so take your time to solve the maze)   |
+|                                                                                      |
+|  Are you ready?  \☺/                                                                 |
+|  Good luck!       []                                                                 |
+|                   /\                        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄      |
+|                                             █        ▀█▄▀▄▀██████ ▀█▄▀▄▀██████       |
+|  Press [SPACE BAR] to start the game                   ▀█▄█▄███▀    ▀█▄█▄███         |
+|______________________________________________________________________________________|
                 """]), y=screen.height//2 - 5)
 
             ]
@@ -499,6 +499,8 @@ a loser snail
             # Check input
             event = screen.get_event()
             if event and isinstance(event, KeyboardEvent):
+                screen.print_at(
+                    "Press [M] to look at the map ({} charge(s) left). Press [P] to pause the game.".format(self.sm.state["MAP_COUNTER"]), 0, 0)
                 show_map = False
                 c = event.key_code
                 self.sm.step(c)
@@ -534,7 +536,7 @@ a loser snail
                         self.map_screen(screen, map_padding, player_pos, mMap)
                     else:
                         screen.print_at(
-                            "Map is no longer available. Good luck!", 0, 0)
+                            "Map is no longer available. Good luck!                          ", 0, 0)
                 elif c in (ord("P"), ord("p")):
                     alive = self.pause_screen(screen)
 
@@ -601,13 +603,15 @@ a loser snail
 
             # screen.set_title("Maze Runner: position: x:{:.3f}, y:{:.3f}, arc:{:.3f}, fps:{:.3f}".format(
             #     player_pos.x, player_pos.y, player_arc, 1/elapsedTime))
-            screen.set_title("Maze Runner [FPS:{:.3f}]".format(1/elapsedTime))
-            # screen.print_at('p', player_pos.x_int, player_pos.y_int)
-            screen.refresh()
 
             t2 = time.time()
             elapsedTime = t2 - t1
             t1 = t2
+
+            screen.set_title("Maze Runner [FPS:{:.3f}]".format(1/elapsedTime))
+            screen.print_at('Time elapsed {:.3f} secs'.format(
+                self.sm.state["TIME_ELAPSED"] + t2 - self.sm.state["START_TIME"]), 0, 1)
+            screen.refresh()
 
     def main_screen(self, screen):
         self.main_game_loop(screen)
@@ -616,9 +620,9 @@ a loser snail
         while True:
             try:
                 if self.sm.state["SCREEN"] is "MENU":
-                    Screen.wrapper(self.start_screen, catch_interrupt=True)
+                    Screen.wrapper(self.start_screen, catch_interrupt=False)
                 elif self.sm.state["SCREEN"] is "WAIT":
-                    Screen.wrapper(self.wait_screen, catch_interrupt=True)
+                    Screen.wrapper(self.wait_screen, catch_interrupt=False)
                 elif self.sm.state["SCREEN"] is "QUIT":
                     print("Stopped gracefully")
                     # print(self.sm.state)
