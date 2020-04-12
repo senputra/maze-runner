@@ -24,6 +24,9 @@ class Coordinate():
         self.x += math.cos(angle) * distance
         self.y += math.sin(angle) * distance
 
+    def distance(self, other) -> float:
+        return ((self.x-other.x)**2 + (self.y-other.y)**2)**0.5
+
     @property
     def x_int(self):
         return int(self.x)
@@ -282,15 +285,15 @@ ________________________________________________________________________________
             screen.play(scenes, stop_on_resize=True,
                         unhandled_input=self.wait_screen_event_handler)
 
-    def mapGenerator(self, difficulty) -> list:
+    def mapGenerator(self, difficulty) -> tuple:
         if difficulty == "HARD":
-            return [
+            masterMap = [
                 "################",
-                "#.......#......#",
+                "#s......#......#",
                 "#.......#...####",
                 "######..#......#",
                 "#.......###....#",
-                "#...#####...####",
+                "#...##e##...####",
                 "#.......##.....#",
                 "######..##.....#",
                 "#.......##.....#",
@@ -302,23 +305,46 @@ ________________________________________________________________________________
                 "#........#.....#",
                 "################", ]
         else:
-            return [
-                "################",
-                "#.......#......#",
-                "#.......#...####",
-                "##......#......#",
-                "#.......#.#....#",
-                "#.......#.######",
-                "#.......#......#",
-                "##......#......#",
-                "#.......#......#",
-                "#...#####..#####",
-                "#.......#......#",
-                "#.......#......#",
+            # return [
+            #     "################",
+            #     "#.......#......#",
+            #     "#.......#...####",
+            #     "##......#......#",
+            #     "#.......#.#....#",
+            #     "#.......#.######",
+            #     "#.......#......#",
+            #     "##......#......#",
+            #     "#.......#......#",
+            #     "#...#####..#####",
+            #     "#.......#......#",
+            #     "#.......#......#",
+            #     "#..............#",
+            #     "#........#.....#",
+            #     "#........#.....#",
+            #     "################", ]
+            masterMap = [
+                "############e###",
+                "#s.............#",
                 "#..............#",
-                "#........#.....#",
-                "#........#.....#",
-                "################", ]
+                "#..............#",
+                "#..............#",
+                "#..............#",
+                "e..............#",
+                "#..............#",
+                "#..............#",
+                "#..............#",
+                "#..............#",
+                "#..............#",
+                "#..............e",
+                "#..............#",
+                "#..............#",
+                "#######e########", ]
+            startCoor = (0, 0)
+            for y in range(len(masterMap)):
+                if masterMap[y].find('s') != -1:
+                    startCoor = Coordinate(masterMap[y].find('s'), y)
+
+        return masterMap, startCoor, Coordinate(0, 7)
 
     def result_screen(self, screen):
 
@@ -413,6 +439,9 @@ a loser snail
 
     def map_screen(self, screen, map_padding, player_pos, mMap):
         alive = True
+        for y in range(len(mMap)):
+            mMap[y] = mMap[y].replace('e', '#').replace('s', '.')
+
         while alive:
 
             # Check input
@@ -454,7 +483,8 @@ a loser snail
         elapsedTime = 0.01
 
         # Preconfig
-        mMap = self.mapGenerator(self.sm.state["DIFFICULTY"])
+        mMap, player_pos, golden_gate_position = self.mapGenerator(
+            self.sm.state["DIFFICULTY"])
 
         size_mapX = len(mMap[0])
         size_mapY = len(mMap)
@@ -547,6 +577,7 @@ a loser snail
                 distance = 0.0
                 hit = False
                 black_hit = False
+                golden_hit = False
                 incr = 0.05
                 # Shoot all rays towards the FOV then see what they hit
                 while(not hit and distance < distance_too_far):
@@ -570,6 +601,10 @@ a loser snail
                         if not((0.05 < tar_x % 1 < 0.95) or (0.05 < tar_y % 1 < 0.95)):
                             black_hit = True
 
+                    elif 'e' == mMap[int(tar_y)][int(tar_x)]:
+                        hit = True
+                        golden_hit = True
+
                 # Closest will have least ceiling and floor
                 # Furthest will have most ceiling and floor
                 # Linear mapping
@@ -583,6 +618,12 @@ a loser snail
                     if floorceil_thickness < y < (screen.height - floorceil_thickness):
                         if black_hit:
                             screen.print_at(" ", x, y)
+                        elif golden_hit and distance < distance_too_far_1:
+                            screen.print_at("█", x, y, 1)
+                        elif golden_hit and distance < distance_too_far_2:
+                            screen.print_at("▒", x, y, 1)
+                        elif golden_hit and distance < distance_too_far:
+                            screen.print_at("░", x, y, 1)
                         elif distance < distance_too_far_1:
                             screen.print_at("█", x, y)
                         elif distance < distance_too_far_2:
