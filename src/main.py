@@ -324,8 +324,8 @@ ________________________________________________________________________________
             #     "################", ]
             masterMap = [
                 "############e###",
-                "#s.............#",
-                "#..............#",
+                "#s..e..........#",
+                "#...#..........#",
                 "#..............#",
                 "#..............#",
                 "#..............#",
@@ -506,20 +506,17 @@ a loser snail
 
         show_map = False
 
-        FOV = math.pi / 3  # Field of view
+        FOV = math.pi / 2  # Field of view
         FOV_half = FOV/2
         FOV_delta_screen_width = FOV/screen.width
-
-        distance_too_far = size_mapX // 3
+        focal_length = 1.5
+        distance_too_far = 8
         distance_too_far_1 = distance_too_far * 0.55
         distance_too_far_2 = distance_too_far * 0.7
 
-        screen_height_far = screen.height * 0.55
-        screen_height_near = screen.height * 0.7
+        screen_height_far = screen.height * 0.65
+        screen_height_near = screen.height * 0.77
 
-        max_floorceil = screen.height // 2.01
-        min_floorceil = screen.height // 20
-        diff_floorceil = max_floorceil - min_floorceil
 
         alive = True
 
@@ -609,8 +606,10 @@ a loser snail
                 # Furthest will have most ceiling and floor
                 # Linear mapping
                 # TODO optimize this later
+                # floorceil_thickness = (
+                #     distance) * (diff_floorceil) / (distance_too_far) + min_floorceil
                 floorceil_thickness = (
-                    distance) * (diff_floorceil) / (distance_too_far) + min_floorceil
+                    screen.height - focal_length * screen.height / (distance * 1.5))//2
 
                 for y in range(1, screen.height):
                     # mini map

@@ -71,3 +71,13 @@ State:
 ### Optional
 
 Online leaderboard
+
+
+
+# Focal length vs perspective
+
+https://photo.stackexchange.com/questions/40981/what-is-the-relationship-between-size-of-object-with-distance
+
+
+
+![image-20200412140041440](C:\Users\dodys\AppData\Roaming\Typora\typora-user-images\image-20200412140041440.png)
