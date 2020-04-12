@@ -76,9 +76,17 @@ class StateMachine(sm.SM):
         return state
 
     def screen_play(self, state, inp_key_code):
+
+        if isinstance(inp_key_code, str):
+            elapsed = time.time() - state["START_TIME"]
+            state.update({
+                "SCREEN": "RESULT",
+                "TIME_ELAPSED": state['TIME_ELAPSED'] + elapsed,
+                "WIN": True,
+            })
         # Pause the game
         # Get the elapsed time and add to it. Reset Start_time when unpause
-        if inp_key_code in (ord("P"), ord("p")):
+        elif inp_key_code in (ord("P"), ord("p")):
             elapsed = time.time() - state["START_TIME"]
             state.update({
                 "SCREEN": "PAUSE",
@@ -87,7 +95,7 @@ class StateMachine(sm.SM):
 
         # Open map
         # Reduce map couner by 1
-        if inp_key_code in (ord("M"), ord("m")) and state["MAP_COUNTER"] >= 0:
+        elif inp_key_code in (ord("M"), ord("m")) and state["MAP_COUNTER"] >= 0:
             state.update({
                 "SCREEN": "MAP",
                 "MAP_COUNTER": state["MAP_COUNTER"] - 1,
@@ -100,14 +108,14 @@ class StateMachine(sm.SM):
                 "SCREEN": "PLAY",
                 "START_TIME": time.time(),
             })
-        elif inp_key_code in (ord("Q"), ord("q")):
+        elif inp_key_code in (ord("S"), ord("s")):
             state.update({
                 "SCREEN": "RESULT",
             })
         return state
 
     def screen_result(self, state, inp_key_code):
-        if inp_key_code in (ord("R"), ord("r")):
+        if inp_key_code in (ord("C"), ord("c")):
             state.update({
                 "START_TIME": None,
                 "END_TIME": None,
@@ -116,10 +124,6 @@ class StateMachine(sm.SM):
                 "SCREEN": "MENU",  # Which screen the user is at
                 "MAP_COUNTER": 0,
                 "WIN": False,
-            })
-        elif inp_key_code in (ord("Q"), ord("q")):
-            state.update({
-                "SCREEN": "QUIT",
             })
         return state
 
@@ -196,9 +200,9 @@ class MazeRunner():
                 Print(screen,
                       StaticRenderer(images=[r"""
          ▀▀▀██████▄▄▄
-      ▄▄▄▄▄  █████████▄ 
-     ▀▀▀▀█████▌ ▀▐▄ ▀▐█ 
-   ▀▀█████▄▄ ▀██████▄██ 
+      ▄▄▄▄▄  █████████▄
+     ▀▀▀▀█████▌ ▀▐▄ ▀▐█
+   ▀▀█████▄▄ ▀██████▄██
    ▀▄▄▄▄▄  ▀▀█▄▀█════█▀
         ▀▀▀▄  ▀▀███ ▀      ▄▄
      ▄███▀▀██▄████████▄ ▄▀▀▀██▌
@@ -262,7 +266,7 @@ ________________________________________________________________________________
 | OBJECTIVE                                                                            |
 |--------------------------------------------------------------------------------------|
 |                                                                                      |
-|  You need to escape the maze ASAP. Find the GOLDEN door                              |
+|  You need to escape the maze ASAP. Find the ${1}RED${7} door!                                |
 |  You are only allowed to look at the map 3 times.                                    |
 |                                                                                      |
 |                                                                                      |
@@ -288,63 +292,48 @@ ________________________________________________________________________________
     def mapGenerator(self, difficulty) -> tuple:
         if difficulty == "HARD":
             masterMap = [
-                "################",
-                "#s......#......#",
-                "#.......#...####",
-                "######..#......#",
-                "#.......###....#",
-                "#...##e##...####",
-                "#.......##.....#",
-                "######..##.....#",
-                "#.......##.....#",
-                "#.......##.#####",
-                "#.....#.##.....#",
-                "#.....#.##.....#",
-                "#.....#........#",
-                "#.....#..#.....#",
-                "#........#.....#",
-                "################", ]
+                "#########################################",
+                "#s#...#.....#.....#...#...#.......#.#...#",
+                "#.###.#.#.#.#.#####.#.#.###.#.#.#.#.#.###",
+                "#.#...#.#.#...#...#.#.....#.#.#.#.....#.#",
+                "#.#.#.#######.#.#######.#######.#####.#.#",
+                "#...#.............#.#.....#.....#...#...#",
+                "#.#####.###.###.#.#.###.#.#.#####.###.###",
+                "#.....#.#.#.#...#...#.#.#.....#.#.#.....#",
+                "###.#####.#.#####.###.###.#.###.#.#.#####",
+                "#.......#.#...#.....#.....#.#.#...#.#...#",
+                "#.#.#.###.#.#.#####.###.#.#.#.#.#####.###",
+                "#.#.#.#.....#.#.........#.#.....#.#.....#",
+                "#.###.#.#.#########.e##.#######.#.#####.#",
+                "#.#...#.#.#...#.#.....#...#.#.#.#...#.#.#",
+                "#.###.#######.#.###.#.#####.#.#.###.#.#.#",
+                "#...#.........#.#...#.#.#.....#.......#.#",
+                "#####.#.###.###.###.###.#.#.#.#.#.#.#.#.#",
+                "#.....#.#...#.....#...#...#.#...#.#.#...#",
+                "#.#.#.#.###.#.###.###.###.#.###.###.###.#",
+                "#.#.#.#...#...#...#...#...#...#...#...#.#",
+                "#########################################",
+            ]
         else:
-            # return [
-            #     "################",
-            #     "#.......#......#",
-            #     "#.......#...####",
-            #     "##......#......#",
-            #     "#.......#.#....#",
-            #     "#.......#.######",
-            #     "#.......#......#",
-            #     "##......#......#",
-            #     "#.......#......#",
-            #     "#...#####..#####",
-            #     "#.......#......#",
-            #     "#.......#......#",
-            #     "#..............#",
-            #     "#........#.....#",
-            #     "#........#.....#",
-            #     "################", ]
             masterMap = [
-                "############e###",
-                "#s..e..........#",
-                "#...#..........#",
-                "#..............#",
-                "#..............#",
-                "#..............#",
-                "e..............#",
-                "#..............#",
-                "#..............#",
-                "#..............#",
-                "#..............#",
-                "#..............#",
-                "#..............e",
-                "#..............#",
-                "#..............#",
-                "#######e########", ]
-            startCoor = (0, 0)
-            for y in range(len(masterMap)):
-                if masterMap[y].find('s') != -1:
-                    startCoor = Coordinate(masterMap[y].find('s'), y)
+                "############",
+                "#...#......#",
+                "#s#.#.####.#",
+                "###.#....#.#",
+                "#....###.#.#",
+                "####.#.#.#.#",
+                "#..#.#.#.#.#",
+                "##.#.#.#.#.#",
+                "#........#.#",
+                "######.###.#",
+                "#......#...#",
+                "########e###", ]
+        startCoor = (0, 0)
+        for y in range(len(masterMap)):
+            if masterMap[y].find('s') != -1:
+                startCoor = Coordinate(masterMap[y].find('s'), y)
 
-        return masterMap, startCoor, Coordinate(0, 7)
+        return masterMap, startCoor
 
     def result_screen(self, screen):
 
@@ -352,10 +341,9 @@ ________________________________________________________________________________
             if isinstance(event, KeyboardEvent):
                 c = event.key_code
                 self.sm.step(c)
-                if c in (ord("R"), ord("r")):
+                if c in (ord("C"), ord("c")):
                     raise StopApplication("asd")
-                elif c in (ord("Q"), ord("q")):
-                    raise StopApplication("asd")
+
         if self.sm.state["WIN"]:
             title = "WON"
             art = r"""
@@ -395,7 +383,7 @@ a loser snail
                 Print(screen, StaticRenderer(
                     images=[r"""Thank you for playing Maze Runner!"""]), y=screen.height//2 - 2 - 1),
                 Print(screen, StaticRenderer(images=[
-                      r"""Press [R] to restart the game and [Q] to quit."""]), y=screen.height//2 - 2+7),
+                      r"""Press [C] to continue."""]), y=screen.height//2 - 2+7),
                 Print(screen, StaticRenderer(
                     images=[art]), y=screen.height//2 - 2+9)
             ]
@@ -420,10 +408,10 @@ a loser snail
                 self.sm.step(c)
                 if c in (ord("C"), ord("c")):
                     alive = False  # exit this loop and go back to main_game_loop
-                elif c in (ord("Q"), ord("q")):
+                elif c in (ord("S"), ord("s")):
                     self.result_screen(screen)
 
-            message = "The game is paused. Press [C] to continue. Press [Q] to Quit."
+            message = "The game is paused. Press [C] to continue. Press [S] to Stop game."
             screen.print_at(message, screen.width//2 -
                             len(message)//2, screen.height//2)
 
@@ -440,7 +428,7 @@ a loser snail
     def map_screen(self, screen, map_padding, player_pos, mMap):
         alive = True
         for y in range(len(mMap)):
-            mMap[y] = mMap[y].replace('e', '#').replace('s', '.')
+            mMap[y] = mMap[y].replace('s', '.')
 
         while alive:
 
@@ -456,15 +444,20 @@ a loser snail
             for x in range(screen.width):
                 for y in range(screen.height):
                     if (x - map_padding[0]) >= 0 and (x - map_padding[2]) < 0 and (y - map_padding[1]) >= 0 and (y - map_padding[3]) < 0:
-                        screen.print_at(mMap[y - map_padding[1]]
-                                        [x - map_padding[0]], x, y)
+                        if mMap[y - map_padding[1]][x - map_padding[0]] == 'e':
+                            screen.print_at(mMap[y - map_padding[1]]
+                                            [x - map_padding[0]], x, y, 1)
+                        else:
+                            screen.print_at(mMap[y - map_padding[1]]
+                                            [x - map_padding[0]], x, y)
+
                     else:
                         screen.print_at(" ", x, y)
 
             screen.print_at(
                 'O', map_padding[0]+player_pos.x_int, map_padding[1]+player_pos.y_int)
 
-            message = "Left with {} map charges.".format(
+            message = "Left with {} map charge(s).".format(
                 self.sm.state["MAP_COUNTER"])
 
             screen.print_at(
@@ -483,7 +476,7 @@ a loser snail
         elapsedTime = 0.01
 
         # Preconfig
-        mMap, player_pos, golden_gate_position = self.mapGenerator(
+        mMap, player_pos = self.mapGenerator(
             self.sm.state["DIFFICULTY"])
 
         size_mapX = len(mMap[0])
@@ -506,7 +499,7 @@ a loser snail
 
         show_map = False
 
-        FOV = math.pi / 2  # Field of view
+        FOV = math.pi / 3  # Field of view
         FOV_half = FOV/2
         FOV_delta_screen_width = FOV/screen.width
         focal_length = 1.5
@@ -517,8 +510,9 @@ a loser snail
         screen_height_far = screen.height * 0.65
         screen_height_near = screen.height * 0.77
 
-
         alive = True
+
+        door_found = False
 
         while alive:
             if not self.screenSizeCheck(screen):
@@ -565,7 +559,12 @@ a loser snail
                         screen.print_at(
                             "Map is no longer available. Good luck!                          ", 0, 0)
                 elif c in (ord("P"), ord("p")):
-                    alive = self.pause_screen(screen)
+                    if not self.pause_screen(screen):
+                        return
+                elif c in (ord(" "), ord(" ")) and door_found:
+                    self.sm.step("END")
+                    if not self.result_screen(screen):
+                        return
 
             # Print 3D POV (Ray tracing)
             # Measure the distance from the player to the wall or other object. The further it is the smaller the object will look like
@@ -574,6 +573,7 @@ a loser snail
                 distance = 0.0
                 hit = False
                 black_hit = False
+                door_found = False
                 golden_hit = False
                 incr = 0.05
                 # Shoot all rays towards the FOV then see what they hit
@@ -601,6 +601,8 @@ a loser snail
                     elif 'e' == mMap[int(tar_y)][int(tar_x)]:
                         hit = True
                         golden_hit = True
+                        if distance < 0.2:
+                            door_found = True
 
                 # Closest will have least ceiling and floor
                 # Furthest will have most ceiling and floor
@@ -647,7 +649,11 @@ a loser snail
             t2 = time.time()
             elapsedTime = t2 - t1
             t1 = t2
-
+            if door_found:
+                screen.print_at('You have found the door!',
+                                screen.width//2-12, screen.height//2-1)
+                screen.print_at('Hit [SPACE BAR] to escape!',
+                                screen.width//2-13, screen.height//2+1)
             screen.set_title("Maze Runner [FPS:{:.3f}]".format(1/elapsedTime))
             screen.print_at('Time elapsed {:.3f} secs'.format(
                 self.sm.state["TIME_ELAPSED"] + t2 - self.sm.state["START_TIME"]), 0, 1)
