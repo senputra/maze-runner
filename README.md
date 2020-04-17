@@ -2,31 +2,31 @@
 
 ## Introduction
 
-**Maze Runner** is a First Person Shooter (FPS) game that runs on a terminal window.  Player will get to choose between an easy maze or a difficult one. The rule is simple. Find the red door in the maze and escape as fast as possible. The player is only allowed to use the map a limited number of time. The time taken to finish a round is also recorded. 
+**Maze Runner** is a First Person game that runs on a terminal window. The Player will get to choose between an easy maze or a difficult one. The rule is simple. Find the red door in the maze and escape as fast as possible. The player is only allowed to use the map for a limited number of times. The time taken to finish one round is recorded. 
 
-Personally, I made this project to learn more about the usage of the very basic **state machine** in python and also the rendering technique that many game engines use, **Ray Tracing**. 
+I made this project to learn more about the usage of the very basic **state machine** in python and also the rendering technique that many game engines use, **Ray Tracing**. 
 
 ### Ray Tracing
 
-Ray Tracing is one of many rendering techniques. Steps on how it works is as follows:
+Ray Tracing is one of many rendering techniques. Steps on how it works are as follows:
 
 1. Light rays are shot out from the player's point of view.
-2. For every light rays, trace where each of them is going to.
-3. When a collision with an object is detected, some of the light ray will be absorbed and some will bounce off in different direction.
-4. The light ray keeps being absorbed and bounces until it reaches the light source or an very dark opaque object.
-5. The aggregated value from those bounces will give us the amount of light or shadow that should be shown for each pixel on the screen.
+2. For every light ray, trace where each of them is going to.
+3. When a collision with an object is detected, a portion of the light ray will be absorbed and some will bounce off in different directions.
+4. The light ray keeps being absorbed and bouncing until it reaches the light source or a very dark opaque object.
+5. The aggregated value from those bounces will give the amount of light or shadow that should be shown for each pixel on the screen.
 
-With the constraint that I have in coding this game; terminal window as the display and a not so fast programming language, ehem, python, I limit the extend of ray tracing the game uses. 
+With the constraint that I have in this coding project; a terminal window as the display and a must to use python, an interpreted language (which may run less efficiently as compiled programming language like C++), I limit the extend of ray tracing the game uses. 
 
-In **Maze Runner** the light rays only bounce off once form the wall and the distance of the wall form the players determine how bright or dark the wall is. 
+In **Maze Runner**, the light rays only bounce off once from the wall and the distance of the wall from the players determines how bright or dark the pixel is. 
 
-The size of the wall is scaled with a linear inverse relationship with the distance of the object. This is similar to the effect of cameras in real life will get. 
+The size of the wall is scaled with a linear inverse relationship with the distance of the object. This is similar to the effect that cameras in real life.
 
 ### State Machine
 
-In **Maze Runner**,  state machine manages the upper level state of the game. Upper level state consists of the state of the screen that is displayed to the player and how the screen should change with the  keyboard input from the player.
+In **Maze Runner**, the state machine manages the upper-level state of the game. The upper-level state consists of the state of the screen that is displayed to the player and how the screen should change with the keyboard input from the player.
 
-I tried to use state machine to manage the all of the states of the game. However, it hits the performance very badly; the game ran for around 5 FPS instead of the normal 20 FPS on average. Therefore, I keep some of the in-game controls such as movement and trigger actions inside the variables of the main function not inside the state of the state machine object.
+I tried to use the state machine to manage all of the states of the game. However, it hits the performance very badly; the game ran for around 5 frames per second (FPS)instead of the normal 20 frames per second (FPS) on average. Therefore, I keep some of the in-game controls such as movement and trigger actions inside the variables of the main function not inside the state of the state machine object.
 
 ### Dependencies:
 
