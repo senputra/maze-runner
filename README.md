@@ -46,6 +46,19 @@ I tried to use state machine to manage the all of the states of the game. Howeve
    $ python ./main.py
    ```
 
+## How to play - *if you have git installed*
+
+Ensure that asciimatics and libdw are installed.*The game will run into an error if these libraries are not installed properly.*
+
+1. Open power shell (Win X + A) or any of your favorite terminal.
+
+   ```bash
+   # Clone the whole repository.
+   $ git clone https://github.com/ulaladungdung/maze-runner.git
+   # Run the game.
+   $ python ./src/main.py
+   ```
+
 ## Documentation
 
 ### _class_ GPU()
@@ -73,6 +86,8 @@ I tried to use state machine to manage the all of the states of the game. Howeve
 **Parameters:**
 
 - **restore** – If True, only discard the display buffer of the terminal window. Otherwise, remove buffer and closes all the opened input to the terminal window
+
+**Returns:** None
 
 #### print_at( *char: str, x: int, y: int, color=7, attr=0, bg=0, transparent=False* )
 
@@ -109,7 +124,7 @@ A_NORMAL = 2
 
 Check for any events (e.g. key-press or mouse movement) without waiting.
 
-**Returns:** A Event object if anything was detected, otherwise it returns None.
+**Returns:** An Event object if anything was detected, otherwise it returns None.
 
 #### refresh()
 
@@ -138,6 +153,8 @@ Check for any events (e.g. key-press or mouse movement) without waiting.
 - **stop_on_resize** – Whether to stop when the screen is resized. Default is to carry on regardless – which will typically result in an error.
 - **input_handler** – Function to call for any input.
   The input_handler input function just takes one parameter – the input event that was not handled.
+
+**Returns:** None
 
 ---
 
