@@ -2,24 +2,47 @@
 
 ## Introduction
 
-**Maze Runner** is a First Person Shooting game that is run on a terminal window. TH
+**Maze Runner** is a First Person Shooting (FPS) game that runs on a terminal window.  Player will get to choose between an easy maze or a difficult one. The rule is simple. Find the red door in the maze and escape as fast as possible. The player is only allowed to use the map a limited number of time. The time taken to finish a single is also recorded. 
 
-Dependencies:
+Personally, I made this project to learn more about the usage of the very basic **state machine** in python and also the rendering technique that many game engines use, **Ray Tracing**. 
 
-1. libdw
+### Ray Tracing
 
-2. asciimatics - Install by running `conda install -c conda-forge asciimatics`.
+Ray Tracing is one of many rendering techniques. Steps on how it works is as follows:
+
+1. Light rays are shot out from the player's point of view.
+2. For every light rays, trace where each of them is going to.
+3. When a collision with an object is detected, some of the light ray will be absorbed and some will bounce off in different direction.
+4. The light ray keeps being absorbed and bounces until it reaches the light source or an very dark opaque object.
+5. The aggregated value from those bounces will give us the amount of light or shadow that should be shown for each pixel on the screen.
+
+With the constraint that I have in coding this game; terminal window as the display and a not so fast programming language, ehem, python, I limit the extend of ray tracing the game uses. 
+
+In **Maze Runner** the light rays only bounce off once form the wall and the distance of the wall form the players determine how bright or dark the wall is. 
+
+The size of the wall is scaled with a linear inverse relationship with the distance of the object. This is similar to the effect of cameras in real life will get. 
+
+### State Machine
+
+In **Maze Runner**,  state machine manages the upper level state of the game. Upper level state consists of the state of the screen that is displayed to the player and how the screen should change with the  keyboard input from the player.
+
+I tried to use state machine to manage the all of the states of the game. However, it hits the performance very badly; the game ran for around 5 FPS instead of the normal 20 FPS on average. Therefore, I keep some of the in-game controls such as movement and trigger actions inside the variables of the main function not inside the state of the state machine object.
+
+### Dependencies:
+
+- libdw
+- asciimatics – Install by running `conda install -c conda-forge asciimatics`.
 
 ## How to play
 
-1. Ensure that asciimatics and libdw are installed
+1. Ensure that asciimatics and libdw are installed.*The game will run into an error if these libraries are not installed properly.*
 
-2. Open power shell (Ctrl X + A)
+2. Open power shell (Win X + A) or any of your favorite terminal.
 
    ```bash
-   # Change the power shell to the project directory
+   # Move to the project directory.
    $ cd </project/folder>
-   # run the game
+   # Run the game.
    $ python ./main.py
    ```
 
@@ -41,7 +64,7 @@ Dependencies:
 
 #### start()
 
-> ​Grab the lower lever control of the terminal window it is on.
+> Grab the lower lever control of the terminal window it is on.
 
 #### shutdown( _restore=True_ )
 
@@ -82,7 +105,7 @@ A_BOLD = 1
 A_NORMAL = 2
 ```
 
-#### def get_event()
+#### get_event()
 
 Check for any events (e.g. key-press or mouse movement) without waiting.
 
@@ -104,7 +127,7 @@ Check for any events (e.g. key-press or mouse movement) without waiting.
 
 **Returns:** None
 
-#### playScene( _effect_list: list, duration=-1, stop_on_resize=True, input_handler=None_ )
+#### playScene( _effect_list:list, duration=-1, stop_on_resize=True, input_handler=None_ )
 
 > Loop through the list of effect.
 
@@ -235,17 +258,9 @@ __screen_default(self, state, inp)
 - **output** – The output from the input and the current state machine.
 
 ---
+## Appendix
 
-### State Machine
-
-State
-
-1. Before starting
-2. Timer starts
-3. Show maps (record how long the map is being used for)
-4. Finish State
-
-### Coding checkpoints
+### Development checkpoints
 
 - [x] use asciimatics to try make a splash screen
 
@@ -282,9 +297,18 @@ State
 - [x] Testing
 - [x] Optimize
 
-## Brain Storming
+---
 
-## User Flow
+### Future Improvements
+
+1. Migrate to a more efficient programming language. Currently it performs at 20 FPS in average.
+2. Add an online leaderboard where different players can compete.
+
+---
+
+### Brain Storming
+
+#### User Flow
 
 1. click enter to start
 2. start from level 1 - 10
@@ -293,13 +317,10 @@ State
 5. keyboard `A, W, S, and D` to move
 6. mouse dragging to rotate camera.
 
-### Future Improvements
+---
 
-1. Move to a more efficient programmin language. Currently it performs at 30 FPS in average.
-2. Online leaderboard
-
-## Focal length vs perspective
+### Focal length vs perspective
 
 https://photo.stackexchange.com/questions/40981/what-is-the-relationship-between-size-of-object-with-distance
 
-![image-20200412140041440](C:\Users\dodys\AppData\Roaming\Typora\typora-user-images\image-20200412140041440.png)
+![image-20200412140041440](./ss.png)
