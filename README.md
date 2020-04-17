@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Maze Runner** is a First Person Shooter (FPS) game that runs on a terminal window.  Player will get to choose between an easy maze or a difficult one. The rule is simple. Find the red door in the maze and escape as fast as possible. The player is only allowed to use the map a limited number of time. The time taken to finish a single is also recorded. 
+**Maze Runner** is a First Person Shooter (FPS) game that runs on a terminal window.  Player will get to choose between an easy maze or a difficult one. The rule is simple. Find the red door in the maze and escape as fast as possible. The player is only allowed to use the map a limited number of time. The time taken to finish a round is also recorded. 
 
 Personally, I made this project to learn more about the usage of the very basic **state machine** in python and also the rendering technique that many game engines use, **Ray Tracing**. 
 
