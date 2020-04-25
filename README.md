@@ -35,9 +35,9 @@ I tried to use the state machine to manage all of the states of the game. Howeve
 
 ## How to play
 
-1. Ensure that asciimatics and libdw are installed.*The game will run into an error if these libraries are not installed properly.*
+1. Ensure that asciimatics and libdw are installed. *The game will run into an error if these libraries are not installed properly. See below for instructions to install asciimatics.* 
 
-2. Open power shell (Win X + A) or any of your favorite terminal.
+2. Open power shell (Win X + A) or any of your favorite terminal or Anaconda Prompt.
 
    ```bash
    # Move to the project directory.
@@ -48,9 +48,9 @@ I tried to use the state machine to manage all of the states of the game. Howeve
 
 ## How to play - *if you have git installed*
 
-Ensure that asciimatics and libdw are installed.*The game will run into an error if these libraries are not installed properly.*
+Ensure that asciimatics and libdw are installed. *The game will run into an error if these libraries are not installed properly. See below for instructions to install asciimatics.* 
 
-1. Open power shell (Win X + A) or any of your favorite terminal.
+1. Open power shell (Win X + A) or any of your favorite terminal or Anaconda Prompt.
 
    ```bash
    # Clone the whole repository.
@@ -58,6 +58,36 @@ Ensure that asciimatics and libdw are installed.*The game will run into an error
    # Run the game.
    $ python ./src/main.py
    ```
+
+## How to install asciimatics
+
+### Install from anaconda
+
+1. Open your Anaconda Prompt with **Admin privilege**.
+
+2. Copy and paste this line of command:
+
+   ```bash
+   conda install -c conda-forge asciimatics
+   ```
+
+3. Press Enter.
+
+4. Close this window and reopen Anaconda Prompt.
+
+### Install from Pip
+
+1. Open your Command Prompt with **Admin privilege**.
+
+2. Copy and paste this line of command:
+
+   ```bash
+   pip install asciimatics
+   ```
+
+3. Press Enter.
+
+4. Restart ANao
 
 ## Documentation
 
