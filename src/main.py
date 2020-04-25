@@ -1,12 +1,42 @@
 import importlib
+import sys
+
 if __name__ == "__main__":
+    # Check if asciimatics is installed
     spam_spec = importlib.util.find_spec("asciimatics")
-    if spam_spec is None:
+    if spam_spec is None: # if not installed show how to install then exit the game gracefully
         # install necessary package
-        import subprocess
-        import sys
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "asciimatics"])
+        print("""
+        ========================= Welcome to MAZE RUNNER ==========================
+        ||                                                                        ||
+        || ATTENTION: There is no 'asciimatics' library installed.                ||
+        || Please install it before running the game.                             ||
+        ||                                                                        ||
+        || Install form anaconda:                                                 ||
+        ||       1. Open your Anaconda Prompt with Admin privilege.               ||
+        ||       2. Copy and paste this line of command:                          ||
+        ||                                                                        ||
+        ||               conda install -c conda-forge asciimatics                 ||
+        ||                                                                        ||
+        ||       3. Press Enter                                                   ||
+        ||       4. Close this window and reopen Anaconda Prompt                  ||
+        ||       5. Play the game!                                                ||
+        ||                                                                        ||  
+        || Install from Pip:                                                      ||
+        ||       1. Open Command Prompt with Admin privilege.                     ||  
+        ||       2. Copy and paste this line of command:                          ||
+        ||                                                                        ||
+        ||               pip install asciimatics                                  ||             
+        ||                                                                        ||
+        ||       3. Press Enter                                                   ||                     
+        ||       4. Close this window and reopen Anaconda Prompt                  ||      
+        ||       5. Play the game!                                                ||
+        ||                                                                   dody ||
+        ||  Thanks for playing!                         github.com/ulaladungdung/ ||                           
+        ||                                                                        ||
+        ========================= Welcome to MAZE RUNNER ==========================
+        """)
+        sys.exit(0)
 
     from asciimatics.effects import Print
     from asciimatics.renderers import BarChart, FigletText, Fire, StaticRenderer
@@ -17,7 +47,6 @@ if __name__ == "__main__":
     from random import randint
     from libdw import sm
     from time import sleep
-    import sys
     import math
     import time
 
@@ -25,10 +54,6 @@ if __name__ == "__main__":
 class GPU():  # This class wrap asciimatics so that it can be replaced with any other TUI lib.
 
     __DISABLE_KEYBOARD_INTERRUPT = True
-
-    def __init__(self):
-        self.start()
-        # put a character into a buffer that is as big as the terminal
 
     def print_at(self, char: str, x: int, y: int,  color=7, attr=0, bg=0, transparent=False) -> None:
         try:
@@ -74,7 +99,7 @@ class GPU():  # This class wrap asciimatics so that it can be replaced with any 
 
 
 class Coordinate():
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
@@ -205,8 +230,10 @@ class StateMachine(sm.SM):
 class MazeRunner():
     def __init__(self, sm):
         self.sm = sm
-        sm.start()
         self.mGPU = GPU()
+
+        self.sm.start() # Start the state machine
+        self.mGPU.start()
 
     def start_screen(self):
         # set up the event handler function
@@ -371,7 +398,7 @@ ________________________________________________________________________________
 
     def result_screen(self):
 
-        def even_handler(event):
+        def input_even_handler(event):
             if isinstance(event, KeyboardEvent):
                 c = event.key_code
                 self.sm.step(c)
@@ -423,7 +450,7 @@ a loser snail
 
         self.mGPU.set_title(title)
         self.mGPU.playScene(effects, stop_on_resize=True,
-                            input_handler=even_handler)
+                            input_handler=input_even_handler)
 
     def pause_popup(self):
         title = "PAUSED"
@@ -620,13 +647,8 @@ a loser snail
 
                     if '#' == mMap[int(tar_y)][int(tar_x)]:
                         hit = True
-                        # if (tar_x - int(tar_x)) ** 2 + (tar_y - int(tar_y)) ** 2 <= 0.003 or (tar_x - int(tar_x+1)) ** 2 + (tar_y - int(tar_y+1)) ** 2 <= 0.003:
-                        #     black_hit = True
-                        # if (abs(tar_x - round(tar_x)) <= 0.05) and (abs(tar_y - round(tar_y)) <= 0.05):
-                        #     black_hit = True
-
                         # Check if the ray touches the edges
-                        # if the ray doesnt touch the center (90%) of the cell
+                        # if the ray touches the center (90%) of the cell. Draw an a black border to improve visual
                         if not((0.05 < tar_x % 1 < 0.95) or (0.05 < tar_y % 1 < 0.95)):
                             black_hit = True
 
@@ -636,18 +658,11 @@ a loser snail
                         if distance < 0.2:
                             door_found = True
 
-                # Closest will have least ceiling and floor
-                # Furthest will have most ceiling and floor
-                # Linear mapping
-                # TODO optimize this later
-                # floorceil_thickness = (
-                #     distance) * (diff_floorceil) / (distance_too_far) + min_floorceil
+                # Inverse relationship. Check Readme for more info
                 floorceil_thickness = (
                     self.mGPU.height - focal_length * self.mGPU.height / (distance * 1.5))//2
 
                 for y in range(1, self.mGPU.height):
-                    # mini map
-
                     if floorceil_thickness < y < (self.mGPU.height - floorceil_thickness):
                         if black_hit:
                             self.mGPU.print_at(" ", x, y)
@@ -675,9 +690,6 @@ a loser snail
                     else:
                         self.mGPU.print_at(" ", x, y)
 
-            # self.mGPU.set_title("Maze Runner: position: x:{:.3f}, y:{:.3f}, arc:{:.3f}, fps:{:.3f}".format(
-            #     player_pos.x, player_pos.y, player_arc, 1/elapsedTime))
-
             t2 = time.time()
             elapsedTime = t2 - t1
             t1 = t2
@@ -694,7 +706,6 @@ a loser snail
 
     def end(self):
         self.mGPU.shutdown()
-        sys.exit(0)
 
     def run(self):
         while True:
@@ -705,8 +716,14 @@ a loser snail
                     self.wait_screen()
                 elif self.sm.state["SCREEN"] is "QUIT":
                     self.end()
-                    print("Stopped gracefully.")
-                    # print(self.sm.state)
+                    print("""
+        =============================== MAZE RUNNER ===============================
+        ||                                                                        ||
+        ||  I hope you had fun.                                              dody ||
+        ||  Thanks for playing!                         github.com/ulaladungdung/ ||                           
+        ||                                                                        ||
+        =============================== MAZE RUNNER ===============================
+        """)
                     sys.exit(0)
                 else:
                     self.main_screen()
@@ -718,3 +735,4 @@ a loser snail
 if __name__ == "__main__":
     mr = MazeRunner(StateMachine())
     mr.run()
+    
